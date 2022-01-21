@@ -1,17 +1,11 @@
 import Head from 'next/head';
 
-interface SEOProps {
-  title : string;
-}
-
-export default function SEO(props : SEOProps) {
-
-
+export default function SEO(props) {
 
   return(
     <Head>
-      <title>{props.title} * Instamock-try</title>
-
+      <title>{props.title}</title>
+      {props.children}
     </Head>
   )
 }
