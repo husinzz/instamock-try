@@ -1,8 +1,27 @@
 import Navbar from "../components/navbar";
+import CommentWithPicture from "../components/comment-with-picture";
 import { useState } from "react";
+import { CommentWithPictureType } from "../components/comment-with-picture";
 
 export default function PAGE() {
   const [commentText, setComment] = useState("");
+  const [commentList, addToCommentsList] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+
+  function addCommentToList(
+    pfpToAdd: string,
+    usernameToAdd: string,
+    commentToAdd: string
+  ) {
+    addToCommentsList(
+      commentList.concat({
+        pfp: pfpToAdd,
+        username: usernameToAdd,
+        comment: commentToAdd,
+      })
+    );
+  }
 
   return (
     <>
@@ -41,7 +60,18 @@ export default function PAGE() {
               {/* Commens will go here */}
               <div className="min-h-[200px] h-full">
                 <div className="px-3">
-                  <Comment />
+                  {commentList.map(
+                    (comment: CommentWithPictureType, index: number) => {
+                      return (
+                        <CommentWithPicture
+                          pfp="/human.png"
+                          username={comment.username}
+                          comment={comment.comment}
+                          key={index}
+                        />
+                      );
+                    }
+                  )}
                 </div>
               </div>
 
@@ -51,15 +81,25 @@ export default function PAGE() {
                   {/* User interaction */}
                   <div className="mt-2 mb-3">
                     <div className="flex items-center">
-                      <button>
-                        <i className="text-2xl mr-4 bi bi-heart"></i>
-                      </button>
-                      <button>
-                        <i className="text-2xl bi bi-chat-right"></i>
+                      <button
+                        onClick={() => {
+                          if (!liked) {
+                            setLiked(true);
+                            setTotalLikes(totalLikes + 1);
+                          } else {
+                            setTotalLikes(totalLikes - 1);
+                            setLiked(false);
+                          }
+                        }}>
+                        <i
+                          className={
+                            "text-2xl mr-4 bi " +
+                            (liked ? "bi-heart-fill text-red-400" : "bi-heart")
+                          }></i>
                       </button>
                     </div>
-                    <p className="mt-1 text-sm font-bold">123 Likes</p>
-                    <p className="mt-1 text-xs text-gray-400">1 Day ago</p>
+                    <p className="mt-1 text-sm font-bold">{totalLikes} Likes</p>
+                    {/* <p className="mt-1 text-xs text-gray-400">Days</p> */}
                   </div>
                 </div>
 
@@ -73,7 +113,13 @@ export default function PAGE() {
                       onChange={(e) => setComment(e.target.value)}
                       value={commentText}
                     />
-                    <button>Post</button>
+                    <button
+                      onClick={() => {
+                        addCommentToList("/human.png", "Man", commentText);
+                        setComment("");
+                      }}>
+                      Post
+                    </button>
                   </div>
                 </div>
               </div>
@@ -82,29 +128,5 @@ export default function PAGE() {
         </div>
       </div>
     </>
-  );
-}
-
-function Comment() {
-  return (
-    <div className="mt-2">
-      {/* Profile picture */}
-      <div className="flex">
-        <div className="rounded-full overflow-hidden h-8 min-w-[32px] mr-3">
-          <img src="/human.png" alt="profile-picture" className="h-full" />
-        </div>
-
-        {/* Comment and username */}
-        <div>
-          <div className="text-md">
-            <span className="font-bold">Username</span> Lorem ipsum dolor sit, amet
-            consectetur adipisicing elit. Illum non, doloribus pariatur officia
-            quidem quia quos delectus minima error dignissimos, cupiditate atque
-            numquam aspernatur iure quas nisi maxime tempora a.
-          </div>
-          <p className="text-xs text-gray-400">2d</p>
-        </div>
-      </div>
-    </div>
   );
 }

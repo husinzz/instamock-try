@@ -1,9 +1,21 @@
 import { useState } from "react";
-import Comment from "./comment";
+import Comment, { CommentType } from "./comment";
 import SEO from "./SEO";
+
+interface Comment {
+  username : string;
+  comment : string;
+}
 
 export default function Picture(props) {
   const [commentText, setComment] = useState("");
+  const [commentList, addToCommentsList] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+
+  function addCommentToList(usernameToAdd : string, commentToAdd : string)  {
+    addToCommentsList(commentList.concat({username: usernameToAdd, comment : commentToAdd}))
+  }
 
   return (
     <div className="border rounded-sm mb-6 bg-white">
@@ -31,14 +43,19 @@ export default function Picture(props) {
       <div className="mx-5 mb-2">
         <div className="mt-4 mb-1">
           <div className="flex items-center">
-            <button>
-              <i className="text-2xl mr-4 bi bi-heart"></i>
-            </button>
-            <button>
-              <i className="text-2xl bi bi-chat-right"></i>
+            <button onClick={() => {
+              if (!liked) {
+                setLiked(true);
+                setTotalLikes(totalLikes + 1);
+              } else {
+                setTotalLikes(totalLikes - 1);
+                setLiked(false)
+              }
+            }}>
+              <i className={"text-2xl mr-4 bi " + (liked ? "bi-heart-fill text-red-400" : "bi-heart")}></i>
             </button>
           </div>
-          <p className="mt-1 font-bold">123 Likes</p>
+          <p className="mt-1 font-bold">{totalLikes} Likes</p>
         </div>
 
         {/* User caption */}
@@ -54,7 +71,9 @@ export default function Picture(props) {
 
         {/* User Comments */}
         <div>
-          <Comment username="Guy" comment="Text" />
+          {commentList.map((comment : CommentType, index : number) => {
+            return <Comment username={comment.username} comment={comment.comment} />
+          })}
         </div>
       </div>
 
@@ -67,7 +86,10 @@ export default function Picture(props) {
           onChange={(e) => setComment(e.target.value)}
           value={commentText}
         />
-        <button>Post</button>
+        <button onClick={() => {
+          addCommentToList("Man", commentText);
+          setComment("")
+        }}>Post</button>
       </div>
     </div>
   );

@@ -37,10 +37,7 @@ const Home: NextPage = () => {
                   <div className="flex items-center">
                     {/* Profile Picture */}
                     <div className="max-w-[52px] max-h-[52px] overflow-hidden rounded-full">
-                      <img
-                        src="/human.png"
-                        className="h-full"
-                      />
+                      <img src="/human.png" className="h-full" />
                     </div>
 
                     {/* Username */}
@@ -58,7 +55,10 @@ const Home: NextPage = () => {
                 <footer className=" mt-5">
                   <div className="text-sm text-gray-500">
                     <Link href="https://apalah.tech">
-                      <a>&copy; 2022 Instamock-try for Apalah.tech </a>
+                      <a>&copy; 2022 Instamock-try from Apalah.tech </a>
+                    </Link><br/>
+                    <Link href="https://instagram.com">
+                      <a>Inspired by Instagram from Meta</a>
                     </Link>
                     <p>Created for practice, no harm intended {"<3"}</p>
                   </div>
