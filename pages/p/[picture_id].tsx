@@ -1,26 +1,40 @@
-import Navbar from "../components/navbar";
-import CommentWithPicture from "../components/comment-with-picture";
+import Navbar from "../../components/navbar";
+import CommentWithPicture from "../../components/comment-with-picture";
+import Link from "next/link";
 import { useState } from "react";
-import { CommentWithPictureType } from "../components/comment-with-picture";
+import { CommentWithPictureType } from "../../components/comment-with-picture";
 
-export default function PAGE() {
+interface pictureSinglePage {
+  picture_url : string;
+  username: string;
+  username_url: string;
+  pfp_url: string;
+  num_of_likes: number;
+  caption: string;
+  liked_by: string[];
+  comment_list: CommentWithPictureType[];
+}
+
+export default function PAGE(props : pictureSinglePage) {
   const [commentText, setComment] = useState("");
-  const [commentList, addToCommentsList] = useState([]);
-  const [totalLikes, setTotalLikes] = useState(0);
+  const [commentList, addToCommentsList] = useState(props.comment_list || []);
+  const [totalLikes, setTotalLikes] = useState(props.num_of_likes || 0);
   const [liked, setLiked] = useState(false);
+  const [likedBy, setLikedBy] = useState(props.liked_by || []);
 
   function addCommentToList(
     pfpToAdd: string,
     usernameToAdd: string,
     commentToAdd: string
   ) {
-    addToCommentsList(
-      commentList.concat({
+    addToCommentsList([
+      ...commentList,
+      {
         pfp: pfpToAdd,
         username: usernameToAdd,
         comment: commentToAdd,
-      })
-    );
+      },
+    ]);
   }
 
   return (
@@ -32,7 +46,7 @@ export default function PAGE() {
             {/* The picture */}
             <div className="max-w-[50%]">
               <img
-                src="/human.png"
+                src={props.picture_url || "/human.png"}
                 alt="Posted picture"
                 className="h-full w-full"
               />
@@ -45,12 +59,12 @@ export default function PAGE() {
                 <div className="flex items-center">
                   <div className="rounded-full overflow-hidden h-8 mr-2">
                     <img
-                      src="/human.png"
+                      src={props.pfp_url || "/human.png"}
                       alt="profile-picture"
                       className="h-full"
                     />
                   </div>
-                  <p>username</p>
+                  <Link href={props.username_url || "/profile"}><a>{props.username}</a></Link>
                 </div>
                 <button>
                   <i className="bi bi-three-dots text-2xl mx-2"></i>
@@ -83,12 +97,14 @@ export default function PAGE() {
                     <div className="flex items-center">
                       <button
                         onClick={() => {
-                          if (!liked) {
+                          if (!liked && !likedBy.includes(props.username)) {
                             setLiked(true);
                             setTotalLikes(totalLikes + 1);
+                            setLikedBy([...likedBy, props.username]);
                           } else {
                             setTotalLikes(totalLikes - 1);
                             setLiked(false);
+                            setLikedBy(likedBy.filter((e) => e != props.username));
                           }
                         }}>
                         <i
@@ -97,6 +113,7 @@ export default function PAGE() {
                             (liked ? "bi-heart-fill text-red-400" : "bi-heart")
                           }></i>
                       </button>
+                      {likedBy}
                     </div>
                     <p className="mt-1 text-sm font-bold">{totalLikes} Likes</p>
                     {/* <p className="mt-1 text-xs text-gray-400">Days</p> */}

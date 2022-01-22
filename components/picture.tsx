@@ -1,33 +1,43 @@
+import Link from "next/link";
 import { useState } from "react";
 import Comment, { CommentType } from "./comment";
-import SEO from "./SEO";
 
-interface Comment {
-  username : string;
-  comment : string;
+interface pictureType {
+  picture_url : string;
+  username: string;
+  username_url: string;
+  pfp_url: string;
+  num_of_likes: number;
+  caption: string;
+  liked_by: string[];
+  comment_list: CommentType[];
 }
 
-export default function Picture(props) {
+export default function Picture(props: pictureType) {
   const [commentText, setComment] = useState("");
-  const [commentList, addToCommentsList] = useState([]);
-  const [totalLikes, setTotalLikes] = useState(0);
+  const [commentList, addToCommentsList] = useState(props.comment_list || []);
+  const [totalLikes, setTotalLikes] = useState(props.num_of_likes || 0);
   const [liked, setLiked] = useState(false);
+  const [likedBy, setLikedBy] = useState(props.liked_by || []);
 
-  function addCommentToList(usernameToAdd : string, commentToAdd : string)  {
-    addToCommentsList(commentList.concat({username: usernameToAdd, comment : commentToAdd}))
+  function addCommentToList(usernameToAdd: string, commentToAdd: string) {
+    addToCommentsList([
+      ...commentList,
+      { username: usernameToAdd, comment: commentToAdd },
+    ]);
   }
 
   return (
     <div className="border rounded-sm mb-6 bg-white">
-      <SEO title="Instamock"></SEO>
-
       {/* Profile information */}
       <div className="flex items-center justify-between border-b border-black py-4 px-3">
         <div className="flex items-center">
           <div className="rounded-full overflow-hidden h-8 min-w-[32px] mr-3">
-            <img src="/human.png" alt="profile-picture" className="h-full" />
+            <img src={props.pfp_url ||"/human.png"} alt="profile-picture" className="h-full" />
           </div>
-          <p>username</p>
+          <Link href={props.username_url}>
+            <a> {props.username} </a>
+          </Link>
         </div>
         <button>
           <i className="bi bi-three-dots text-2xl mx-2"></i>
@@ -36,23 +46,36 @@ export default function Picture(props) {
 
       {/* The picture */}
       <div>
-        <img src="/human.png" alt="users-picture" width={614} className="" />
+        <img
+          src={props.picture_url || "/human.png"}
+          alt="users-picture"
+          width={614}
+          className=""
+        />
       </div>
 
       {/* User interactions */}
       <div className="mx-5 mb-2">
         <div className="mt-4 mb-1">
           <div className="flex items-center">
-            <button onClick={() => {
-              if (!liked) {
-                setLiked(true);
-                setTotalLikes(totalLikes + 1);
-              } else {
-                setTotalLikes(totalLikes - 1);
-                setLiked(false)
-              }
-            }}>
-              <i className={"text-2xl mr-4 bi " + (liked ? "bi-heart-fill text-red-400" : "bi-heart")}></i>
+            <button
+              onClick={() => {
+                if (!liked && !likedBy.includes(props.username)) {
+                  setLiked(true);
+                  setTotalLikes(totalLikes + 1);
+                  setLikedBy([...likedBy, props.username]);
+                } else {
+                  setTotalLikes(totalLikes - 1);
+                  setLiked(false);
+                  setLikedBy(likedBy.filter((e) => e != props.username));
+                }
+              }}>
+              <i
+                className={
+                  "text-2xl mr-4 bi " +
+                  (liked ? "bi-heart-fill text-red-400" : "bi-heart")
+                }></i>
+              {likedBy}
             </button>
           </div>
           <p className="mt-1 font-bold">{totalLikes} Likes</p>
@@ -60,19 +83,18 @@ export default function Picture(props) {
 
         {/* User caption */}
         <div className="">
-          <span className="font-bold">Username</span>{" "}
-          <span className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed vitae
-            sequi ea veritatis assumenda dolores voluptas. Libero aspernatur
-            beatae accusamus, saepe, eos magnam ab ratione velit aliquam dolorum
-            est? Nam.
-          </span>
+          <Link href={props.username_url}>
+            <a className="font-bold">{props.username}</a>
+          </Link>{" "}
+          <span className="">{props.caption}</span>
         </div>
 
         {/* User Comments */}
         <div>
-          {commentList.map((comment : CommentType, index : number) => {
-            return <Comment username={comment.username} comment={comment.comment} />
+          {commentList.map((comment: CommentType, index: number) => {
+            return (
+              <Comment username={comment.username} comment={comment.comment} />
+            );
           })}
         </div>
       </div>
@@ -86,10 +108,13 @@ export default function Picture(props) {
           onChange={(e) => setComment(e.target.value)}
           value={commentText}
         />
-        <button onClick={() => {
-          addCommentToList("Man", commentText);
-          setComment("")
-        }}>Post</button>
+        <button
+          onClick={() => {
+            addCommentToList(props.username, commentText);
+            setComment("");
+          }}>
+          Post
+        </button>
       </div>
     </div>
   );
