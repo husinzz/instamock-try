@@ -5,6 +5,7 @@ import StoryItem from "../components/story-circle";
 import Link from "next/link";
 import { useState } from "react";
 import LoginPage from "./account/login";
+import SEO from "../components/SEO";
 
 const Home: NextPage = () => {
   const [logedIn, setLoginState] = useState(false);
@@ -12,6 +13,7 @@ const Home: NextPage = () => {
   if (logedIn) {
     return (
       <>
+        <SEO title="Instamock" />
         <Navbar />
         <div>
           <div className="max-w-[975px] mx-auto relative my-5">

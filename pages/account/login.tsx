@@ -3,6 +3,7 @@ import GoogleAuthButton from "../../components/google-auth-button";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useState } from "react";
+import SEO from "../../components/SEO";
 
 export default function LoginPage() {
 const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ const [email, setEmail] = useState("");
 
   return (
     <section className="h-screen bg-gray-50">
+      <SEO title="Login - Instamock" />
       <div className="max-w-[900px] mx-auto flex justify-center items-center h-full">
         <div className="lg:flex justify-center items-center w-full min-h-[618px] hidden bg-[url('https://www.instagram.com/static/images/homepage/home-phones.png/43cc71bb1b43.png')] bg-no-repeat bg-center relative">
           <div className="absolute top-[100px] right-[74px]">
